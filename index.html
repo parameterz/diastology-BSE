@@ -8,12 +8,64 @@
 </head>
 <body>
     <div class="container">
-        <h1>Diastolic Function Evaluation</h1>
-        <form id="evaluationForm">
-            <div id="questionContainer"></div>
-            <button type="submit" id="submitBtn">Next</button>
-        </form>
-        <div id="result"></div>
+        <section id="intro">
+            <h1>Diastolic Function Evaluation</h1>
+            <p>Follow the steps below to evaluate diastolic function using the provided algorithm.</p>
+        </section>
+        
+        <section id="step1">
+            <h2>Step 1: Enter Basic Information</h2>
+            <form id="basic-info-form">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+                <button type="submit">Next</button>
+            </form>
+        </section>
+
+        <section id="step2" class="hidden">
+            <h2>Step 2: Enter Algorithm Criteria</h2>
+            <form id="criteria-form">
+                <label for="avg-e">Average E/e':</label>
+                <input type="number" step="0.01" id="avg-e" name="avg-e" required>
+                <label for="la-volume">LA Volume (mL/m²):</label>
+                <input type="number" step="0.01" id="la-volume" name="la-volume" required>
+                <label for="tr-velocity">TR Velocity (m/s):</label>
+                <input type="number" step="0.01" id="tr-velocity" name="tr-velocity" required>
+                <button type="submit">Next</button>
+            </form>
+        </section>
+
+        <section id="step3" class="hidden">
+            <h2>Step 3: Assess LA Strain</h2>
+            <form id="strain-form">
+                <label for="pump-strain">Pump Strain (%):</label>
+                <input type="number" step="0.01" id="pump-strain" name="pump-strain" required>
+                <label for="reservoir-strain">Reservoir Strain (%):</label>
+                <input type="number" step="0.01" id="reservoir-strain" name="reservoir-strain" required>
+                <button type="submit">Next</button>
+            </form>
+        </section>
+
+        <section id="step4" class="hidden">
+            <h2>Step 4: Assess e' Values</h2>
+            <form id="e-values-form">
+                <label for="septal-e">Septal e' (cm/s):</label>
+                <input type="number" step="0.01" id="septal-e" name="septal-e" required>
+                <label for="lateral-e">Lateral e' (cm/s):</label>
+                <input type="number" step="0.01" id="lateral-e" name="lateral-e" required>
+                <button type="submit">Next</button>
+            </form>
+        </section>
+
+        <section id="results" class="hidden">
+            <h2>Results</h2>
+            <p id="result-text"></p>
+        </section>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
