@@ -38,7 +38,9 @@ $(document).ready(function() {
             question: 'What is the E/e\' value?',
             id: 'eE',
             type: 'number',
-            nextStep: 'laVolume'
+            nextStep: function(answers) {
+                return 'laVolume';
+            }
         },
         {
             condition: (answers) => answers.lvFunction === 'Normal LV systolic function',
@@ -47,6 +49,8 @@ $(document).ready(function() {
             type: 'number',
             nextStep: function(answers) {
                 if (answers.eE < 14 && answers.laVolume < 34) {
+                    return 'evaluateEarly';
+                } else if (answers.eE >= 14 && answers.laVolume >= 34) {
                     return 'evaluateEarly';
                 } else {
                     return 'trVelocity';
