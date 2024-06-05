@@ -38,13 +38,7 @@ $(document).ready(function() {
             question: 'What is the E/e\' value?',
             id: 'eE',
             type: 'number',
-            nextStep: function(answers) {
-                if (answers.eE < 14) {
-                    return 'laVolume';
-                } else {
-                    return 'laVolume';  // Continue to next step for simplicity
-                }
-            }
+            nextStep: 'laVolume'
         },
         {
             condition: (answers) => answers.lvFunction === 'Normal LV systolic function',
