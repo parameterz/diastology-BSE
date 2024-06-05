@@ -13,96 +13,92 @@ $(document).ready(function() {
         }
     };
 
+    $('#criteria-form').on('submit', function(event) {
+        event.preventDefault();
+        const avgE = parseFloat($('#avg-e').val());
+        const laVolume = parseFloat($('#la-volume').val());
+        const trVelocity = parseFloat($('#tr-velocity').val());
+
+        evaluateCriteria(avgE, laVolume, trVelocity);
+    });
+
+    $('#strain-form').on('submit', function(event) {
+        event.preventDefault();
+        const pumpStrain = parseFloat($('#pump-strain').val());
+        const reservoirStrain = parseFloat($('#reservoir-strain').val());
+        evaluateLAstrain(pumpStrain, reservoirStrain);
+    });
+
     $('#basic-info-form').on('submit', function(event) {
         event.preventDefault();
         const age = parseInt($('#age').val());
         const gender = $('#gender').val();
-
-        if (age && gender) {
-            $('#step1').addClass('hidden');
-            $('#step2').removeClass('hidden');
-
-            $('#criteria-form').on('submit', function(event) {
-                event.preventDefault();
-                const avgE = $('#avg-e').val();
-                const laVolume = $('#la-volume').val();
-                const trVelocity = $('#tr-velocity').val();
-
-                evaluateCriteria(age, gender, avgE, laVolume, trVelocity);
-            });
-        }
+        evaluateEValues(age, gender);
     });
 
-    function evaluateCriteria(age, gender, avgE, laVolume, trVelocity) {
+    $('#e-values-form').on('submit', function(event) {
+        event.preventDefault();
+        const septalE = parseFloat($('#septal-e').val());
+        const lateralE = parseFloat($('#lateral-e').val());
+        evaluateEValues(undefined, undefined, septalE, lateralE);
+    });
+
+    function evaluateCriteria(avgE, laVolume, trVelocity) {
         let criteriaPositive = 0;
         if (avgE > 14) criteriaPositive++;
         if (laVolume > 34) criteriaPositive++;
         if (trVelocity > 2.8) criteriaPositive++;
 
-        $('#step2').addClass('hidden');
-
+        clearActiveSections();
         if (criteriaPositive >= 2) {
             displayResults('Impaired diastolic function with elevated filling pressures');
         } else if (criteriaPositive === 1) {
-            $('#step3').removeClass('hidden');
-
-            $('#strain-form').on('submit', function(event) {
-                event.preventDefault();
-                const pumpStrain = $('#pump-strain').val();
-                const reservoirStrain = $('#reservoir-strain').val();
-                evaluateLAstrain(age, gender, pumpStrain, reservoirStrain);
-            });
+            $('#step2').removeClass('hidden').addClass('active-section');
         } else {
-            $('#step4').removeClass('hidden');
-
-            $('#e-values-form').on('submit', function(event) {
-                event.preventDefault();
-                const septalE = parseFloat($('#septal-e').val());
-                const lateralE = parseFloat($('#lateral-e').val());
-                evaluateEValues(age, gender, septalE, lateralE);
-            });
+            $('#basic-info').removeClass('hidden').addClass('active-section');
         }
     }
 
-    function evaluateLAstrain(age, gender, pumpStrain, reservoirStrain) {
-        $('#step3').addClass('hidden');
-
+    function evaluateLAstrain(pumpStrain, reservoirStrain) {
+        clearActiveSections();
         if (pumpStrain >= 14 || reservoirStrain >= 30) {
             displayResults('Impaired diastolic function with elevated filling pressures');
         } else {
-            $('#step4').removeClass('hidden');
-
-            $('#e-values-form').on('submit', function(event) {
-                event.preventDefault();
-                const septalE = parseFloat($('#septal-e').val());
-                const lateralE = parseFloat($('#lateral-e').val());
-                evaluateEValues(age, gender, septalE, lateralE);
-            });
+            $('#basic-info').removeClass('hidden').addClass('active-section');
         }
     }
 
     function evaluateEValues(age, gender, septalE, lateralE) {
-        $('#step4').addClass('hidden');
-        let ageGroup;
-        if (age <= 40) {
-            ageGroup = '18-40';
-        } else if (age <= 65) {
-            ageGroup = '41-65';
-        } else {
-            ageGroup = '>65';
-        }
+        clearActiveSections();
+        if (age !== undefined && gender !== undefined) {
+            // Evaluate e' values
+            let ageGroup;
+            if (age <= 40) {
+                ageGroup = '18-40';
+            } else if (age <= 65) {
+                ageGroup = '41-65';
+            } else {
+                ageGroup = '>65';
+            }
 
-        const eValues = ageGenderEValues[gender][ageGroup];
+            const eValues = ageGenderEValues[gender][ageGroup];
 
-        if (septalE < eValues.septal || lateralE < eValues.lateral) {
-            displayResults('Impaired diastolic function with normal filling pressures');
+            if (septalE < eValues.septal || lateralE < eValues.lateral) {
+                displayResults('Impaired diastolic function with normal filling pressures');
+            } else {
+                displayResults('Normal diastolic function');
+            }
         } else {
-            displayResults('Normal diastolic function');
+            $('#step3').removeClass('hidden').addClass('active-section');
         }
     }
 
     function displayResults(result) {
         $('#result-text').text(result);
         $('#results').removeClass('hidden');
+    }
+
+    function clearActiveSections() {
+        $('section').removeClass('active-section');
     }
 });

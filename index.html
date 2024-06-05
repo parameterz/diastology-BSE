@@ -14,7 +14,31 @@
         </section>
         
         <section id="step1">
-            <h2>Step 1: Enter Basic Information</h2>
+            <h2>Step 1: Enter Algorithm Criteria</h2>
+            <form id="criteria-form">
+                <label for="avg-e">Average E/e':</label>
+                <input type="number" step="0.01" id="avg-e" name="avg-e" required>
+                <label for="la-volume">LA Volume (mL/m²):</label>
+                <input type="number" step="0.01" id="la-volume" name="la-volume" required>
+                <label for="tr-velocity">TR Velocity (m/s):</label>
+                <input type="number" step="0.01" id="tr-velocity" name="tr-velocity" required>
+                <button type="submit">Next</button>
+            </form>
+        </section>
+
+        <section id="step2" class="hidden">
+            <h2>Step 2: Assess LA Strain</h2>
+            <form id="strain-form">
+                <label for="pump-strain">Pump Strain (%):</label>
+                <input type="number" step="0.01" id="pump-strain" name="pump-strain" required>
+                <label for="reservoir-strain">Reservoir Strain (%):</label>
+                <input type="number" step="0.01" id="reservoir-strain" name="reservoir-strain" required>
+                <button type="submit">Next</button>
+            </form>
+        </section>
+
+        <section id="basic-info" class="hidden">
+            <h2>Enter Basic Information</h2>
             <form id="basic-info-form">
                 <label for="age">Age:</label>
                 <input type="number" id="age" name="age" required>
@@ -27,32 +51,8 @@
             </form>
         </section>
 
-        <section id="step2" class="hidden">
-            <h2>Step 2: Enter Algorithm Criteria</h2>
-            <form id="criteria-form">
-                <label for="avg-e">Average E/e':</label>
-                <input type="number" step="0.01" id="avg-e" name="avg-e" required>
-                <label for="la-volume">LA Volume (mL/m²):</label>
-                <input type="number" step="0.01" id="la-volume" name="la-volume" required>
-                <label for="tr-velocity">TR Velocity (m/s):</label>
-                <input type="number" step="0.01" id="tr-velocity" name="tr-velocity" required>
-                <button type="submit">Next</button>
-            </form>
-        </section>
-
         <section id="step3" class="hidden">
-            <h2>Step 3: Assess LA Strain</h2>
-            <form id="strain-form">
-                <label for="pump-strain">Pump Strain (%):</label>
-                <input type="number" step="0.01" id="pump-strain" name="pump-strain" required>
-                <label for="reservoir-strain">Reservoir Strain (%):</label>
-                <input type="number" step="0.01" id="reservoir-strain" name="reservoir-strain" required>
-                <button type="submit">Next</button>
-            </form>
-        </section>
-
-        <section id="step4" class="hidden">
-            <h2>Step 4: Assess e' Values</h2>
+            <h2>Step 3: Assess e' Values</h2>
             <form id="e-values-form">
                 <label for="septal-e">Septal e' (cm/s):</label>
                 <input type="number" step="0.01" id="septal-e" name="septal-e" required>
