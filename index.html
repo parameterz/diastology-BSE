@@ -7,9 +7,20 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#step1">Step 1</a></li>
+                <li><a href="#step2">Step 2</a></li>
+                <li><a href="#basic-info">Basic Info</a></li>
+                <li><a href="#step3">Step 3</a></li>
+                <li><a href="#results">Results</a></li>
+            </ul>
+        </nav>
+    </header>
     <div class="container">
         <section id="intro">
-            <h1>Diastolic Function Evaluation</h1>
+            <h1>Diastolic Function Evaluation Algorithm</h1>
             <p>Follow the steps below to evaluate diastolic function using the provided algorithm.</p>
         </section>
         
@@ -22,7 +33,7 @@
                 <input type="number" step="0.01" id="la-volume" name="la-volume" required>
                 <label for="tr-velocity">TR Velocity (m/s):</label>
                 <input type="number" step="0.01" id="tr-velocity" name="tr-velocity" required>
-                <button type="submit">Next</button>
+                <button type="submit">Evaluate</button>
             </form>
         </section>
 
@@ -33,7 +44,7 @@
                 <input type="number" step="0.01" id="pump-strain" name="pump-strain" required>
                 <label for="reservoir-strain">Reservoir Strain (%):</label>
                 <input type="number" step="0.01" id="reservoir-strain" name="reservoir-strain" required>
-                <button type="submit">Next</button>
+                <button type="submit">Evaluate</button>
             </form>
         </section>
 
@@ -47,7 +58,7 @@
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                 </select>
-                <button type="submit">Next</button>
+                <button type="submit">Evaluate</button>
             </form>
         </section>
 
@@ -58,7 +69,7 @@
                 <input type="number" step="0.01" id="septal-e" name="septal-e" required>
                 <label for="lateral-e">Lateral e' (cm/s):</label>
                 <input type="number" step="0.01" id="lateral-e" name="lateral-e" required>
-                <button type="submit">Next</button>
+                <button type="submit">Evaluate</button>
             </form>
         </section>
 
