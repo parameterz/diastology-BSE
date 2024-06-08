@@ -1,79 +1,172 @@
 $(document).ready(function() {
     let state = {
-        currentNode: 0,
-        history: []
+        inputs: {},
+        finalResultDisplayed: false
     };
 
     const decisionTree = [
         {
-            id: 0,
-            question: "Is the E to e' ratio (E/e') greater than 14?",
-            yes: 1,
-            no: 2
+            id: "eToERatio",
+            question: "What is the E/e' ratio?",
+            options: [
+                { text: "> 14", value: "positive" },
+                { text: "< 14", value: "negative" },
+                { text: "Not Available", value: "not available" }
+            ]
         },
         {
-            id: 1,
-            question: "Is the LA Volume index (LAVi) greater than 34?",
-            yes: 3,
-            no: 4
+            id: "laVolumeIndex",
+            question: "What is the LA Volume index (LAVi)?",
+            options: [
+                { text: "> 34", value: "positive" },
+                { text: "< 34", value: "negative" },
+                { text: "Not Available", value: "not available" }
+            ]
         },
         {
-            id: 2,
-            question: "Is the TR Velocity greater than 2.8?",
-            yes: 3,
-            no: 4
+            id: "trVelocity",
+            question: "What is the TR Velocity?",
+            options: [
+                { text: "> 2.8", value: "positive" },
+                { text: "< 2.8", value: "negative" },
+                { text: "Not Available", value: "not available" }
+            ]
         },
         {
-            id: 3,
-            result: "Diastolic dysfunction present"
+            id: "laStrain",
+            question: "Assess LA strain: pump strain ≥14% OR reservoir strain ≥30%",
+            options: [
+                { text: "Yes", value: "positive" },
+                { text: "No", value: "negative" }
+            ]
         },
         {
-            id: 4,
-            result: "Normal diastolic function"
+            id: "lars",
+            question: "LARs <18%",
+            options: [
+                { text: "Yes", value: "positive" },
+                { text: "No", value: "negative" }
+            ]
+        },
+        {
+            id: "ageSpecificE",
+            question: "Assess relaxation by age-specific e'",
+            options: [
+                { text: "e' > LLN", value: "positive" },
+                { text: "e' < LLN", value: "negative" }
+            ]
+        },
+        {
+            id: "supplementaryParams",
+            question: "Assess supplementary parameters: Ar-A duration >30 ms OR L-wave >20 cm/s",
+            options: [
+                { text: "≥1 positive", value: "positive" },
+                { text: "None positive", value: "negative" }
+            ]
         }
     ];
 
-    function showNode(nodeId) {
-        const node = decisionTree[nodeId];
-        state.currentNode = nodeId;
-        $('#questionContainer').empty();
-        $('#result').hide();
-        $('#yesButton').hide();
-        $('#noButton').hide();
-
-        if (node.question) {
-            $('#questionContainer').text(node.question);
-            $('#yesButton').show();
-            $('#noButton').show();
-        } else if (node.result) {
-            $('#result').text(node.result).show();
+    function appendNode(nodeId) {
+        const node = decisionTree.find(n => n.id === nodeId);
+        if (node && !$(`div[data-node-id='${nodeId}']`).length) {
+            const questionDiv = $(`<div class="question-block" data-node-id="${nodeId}"></div>`);
+            questionDiv.append(`<p>${node.question}</p>`);
+            const select = $('<select class="responseSelect"></select>');
+            select.append('<option value="" selected disabled>Select an option</option>');
+            node.options.forEach((option, index) => {
+                select.append(`<option value="${option.value}">${option.text}</option>`);
+            });
+            questionDiv.append(select);
+            $('#questionContainer').append(questionDiv);
         }
-
-        $('#backButton').toggle(state.history.length > 0);
     }
 
-    function navigateTo(nodeId) {
-        state.history.push(state.currentNode);
-        showNode(nodeId);
+    $('#questionContainer').on('change', '.responseSelect', function() {
+        const selectedValue = $(this).val();
+        const parentDiv = $(this).closest('.question-block');
+        const currentNodeId = parentDiv.data('node-id');
+
+        state.inputs[currentNodeId] = selectedValue;
+
+        // Evaluate the current state based on the inputs
+        evaluateState();
+    });
+
+    function evaluateState() {
+        if (state.finalResultDisplayed) return; // Prevent further evaluations if final result is displayed
+
+        const results = Object.values(state.inputs);
+        const positiveCount = results.filter(value => value === "positive").length;
+        const negativeCount = results.filter(value => value === "negative").length;
+        const availableCount = results.filter(value => value !== "not available").length;
+
+        // Ensure all initial questions are answered before proceeding
+        if (!state.inputs["eToERatio"] || !state.inputs["laVolumeIndex"] || !state.inputs["trVelocity"]) {
+            return;
+        }
+
+        if (availableCount < 2) {
+            $('#result').text("Insufficient data").show();
+            state.finalResultDisplayed = true;
+            return;
+        } else if (positiveCount >= 2) {
+            appendNode("laStrain"); // Assess LA strain
+        } else if (negativeCount >= 2) {
+            appendNode("ageSpecificE"); // Assess relaxation by age-specific e'
+        } else if (availableCount === 2 && positiveCount === 1) {
+            appendNode("laStrain"); // Assess LA strain
+        } else {
+            appendNode("laStrain"); // Assess LA strain
+        }
+
+        // Further branching based on subsequent questions
+        const laStrain = state.inputs["laStrain"];
+        if (laStrain) {
+            if (laStrain === "positive") {
+                $('#result').text("Impaired diastolic function with elevated filling pressures").show();
+                state.finalResultDisplayed = true;
+                return;
+            } else {
+                appendNode("lars"); // LARs <18%
+            }
+        }
+
+        const lars = state.inputs["lars"];
+        if (lars) {
+            if (lars === "positive") {
+                appendNode("ageSpecificE"); // Assess relaxation by age-specific e'
+            } else {
+                appendNode("supplementaryParams"); // Assess supplementary parameters
+            }
+        }
+
+        const ageSpecificE = state.inputs["ageSpecificE"];
+        if (ageSpecificE) {
+            if (ageSpecificE === "positive") {
+                $('#result').text("Normal diastolic function").show();
+                state.finalResultDisplayed = true;
+                return;
+            } else {
+                $('#result').text("Impaired diastolic function with normal filling pressures").show();
+                state.finalResultDisplayed = true;
+                return;
+            }
+        }
+
+        const supplementaryParams = state.inputs["supplementaryParams"];
+        if (supplementaryParams) {
+            if (supplementaryParams === "positive") {
+                $('#result').text("Impaired diastolic function with elevated filling pressures").show();
+                state.finalResultDisplayed = true;
+                return;
+            } else {
+                $('#result').text("If clinically indicated, exercise echo may be considered to investigate elevated filling pressures on exertion").show();
+                state.finalResultDisplayed = true;
+                return;
+            }
+        }
     }
 
-    $('#yesButton').click(function() {
-        const node = decisionTree[state.currentNode];
-        navigateTo(node.yes);
-    });
-
-    $('#noButton').click(function() {
-        const node = decisionTree[state.currentNode];
-        navigateTo(node.no);
-    });
-
-    $('#backButton').click(function() {
-        if (state.history.length > 0) {
-            const previousNode = state.history.pop();
-            showNode(previousNode);
-        }
-    });
-
-    // Start at the root node
-    showNode(0);
+    // Append all initial questions
+    decisionTree.slice(0, 3).forEach(node => appendNode(node.id));
 });
