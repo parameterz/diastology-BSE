@@ -12,19 +12,39 @@
         <form id="evaluationForm">
             <div class="input-group">
                 <label for="eToERatio">E to e' ratio (E/e'):</label>
-                <input type="number" id="eToERatio" required>
+                <input type="number" id="eToERatio">
             </div>
             <div class="input-group">
                 <label for="laVolumeIndex">LA Volume index (LAVi):</label>
-                <input type="number" id="laVolumeIndex" required>
+                <input type="number" id="laVolumeIndex">
             </div>
             <div class="input-group">
                 <label for="trVelocity">TR Velocity:</label>
-                <input type="number" id="trVelocity" required>
+                <input type="number" id="trVelocity">
             </div>
             <button type="button" id="evaluateButton">Evaluate</button>
         </form>
+        <div id="additionalInputs">
+            <div id="diastolicDysfunctionInputs" class="step-inputs" style="display:none;">
+                <div class="input-group">
+                    <label for="additionalInput1">Additional Input 1:</label>
+                    <input type="number" id="additionalInput1">
+                </div>
+                <button type="button" id="submitDiastolicDysfunction">Submit</button>
+            </div>
+            <div id="normalFunctionInputs" class="step-inputs" style="display:none;">
+                <div class="input-group">
+                    <label for="additionalInput2">Additional Input 2:</label>
+                    <input type="number" id="additionalInput2">
+                </div>
+                <button type="button" id="submitNormalFunction">Submit</button>
+            </div>
+        </div>
         <div id="result"></div>
+        <div id="navigationButtons">
+            <button type="button" id="backButton" style="display: none;">Back</button>
+            <button type="button" id="nextButton" style="display: none;">Next</button>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
