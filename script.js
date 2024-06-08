@@ -1,122 +1,79 @@
 $(document).ready(function() {
     let state = {
-        currentStep: 0,
-        initialDecision: null,
-        criteria: {}
+        currentNode: 0,
+        history: []
     };
 
-    $('#evaluateButton').click(function() {
-        // Get the input values
-        let eToERatio = $('#eToERatio').val();
-        let laVolumeIndex = $('#laVolumeIndex').val();
-        let trVelocity = $('#trVelocity').val();
+    const decisionTree = [
+        {
+            id: 0,
+            question: "Is the E to e' ratio (E/e') greater than 14?",
+            yes: 1,
+            no: 2
+        },
+        {
+            id: 1,
+            question: "Is the LA Volume index (LAVi) greater than 34?",
+            yes: 3,
+            no: 4
+        },
+        {
+            id: 2,
+            question: "Is the TR Velocity greater than 2.8?",
+            yes: 3,
+            no: 4
+        },
+        {
+            id: 3,
+            result: "Diastolic dysfunction present"
+        },
+        {
+            id: 4,
+            result: "Normal diastolic function"
+        }
+    ];
 
-        // Convert input values to floats if they are provided
-        eToERatio = eToERatio ? parseFloat(eToERatio) : undefined;
-        laVolumeIndex = laVolumeIndex ? parseFloat(laVolumeIndex) : undefined;
-        trVelocity = trVelocity ? parseFloat(trVelocity) : undefined;
+    function showNode(nodeId) {
+        const node = decisionTree[nodeId];
+        state.currentNode = nodeId;
+        $('#questionContainer').empty();
+        $('#result').hide();
+        $('#yesButton').hide();
+        $('#noButton').hide();
 
-        // Implement the algorithm logic
-        let result = evaluateDiastolicFunction(eToERatio, laVolumeIndex, trVelocity);
+        if (node.question) {
+            $('#questionContainer').text(node.question);
+            $('#yesButton').show();
+            $('#noButton').show();
+        } else if (node.result) {
+            $('#result').text(node.result).show();
+        }
 
-        // Display the result
-        $('#result').text('Result: ' + result);
+        $('#backButton').toggle(state.history.length > 0);
+    }
 
-        // Save state and handle subsequent steps based on the result
-        state.initialDecision = result;
-        state.criteria = {
-            eToERatio: eToERatio !== undefined ? eToERatio > 14 : undefined,
-            laVolumeIndex: laVolumeIndex !== undefined ? laVolumeIndex > 34 : undefined,
-            trVelocity: trVelocity !== undefined ? trVelocity > 2.8 : undefined
-        };
-        state.currentStep = 1;
-        handleSubsequentSteps(state.currentStep, state.initialDecision);
+    function navigateTo(nodeId) {
+        state.history.push(state.currentNode);
+        showNode(nodeId);
+    }
+
+    $('#yesButton').click(function() {
+        const node = decisionTree[state.currentNode];
+        navigateTo(node.yes);
     });
 
-    function evaluateDiastolicFunction(eToERatio, laVolumeIndex, trVelocity) {
-        let criteria = {
-            eToERatio: eToERatio !== undefined ? eToERatio > 14 : undefined,
-            laVolumeIndex: laVolumeIndex !== undefined ? laVolumeIndex > 34 : undefined,
-            trVelocity: trVelocity !== undefined ? trVelocity > 2.8 : undefined
-        };
-
-        let positiveCount = Object.values(criteria).filter(val => val === true).length;
-        let availableCount = Object.values(criteria).filter(val => val !== undefined).length;
-
-        let initialDecision;
-        if (availableCount < 2) {
-            initialDecision = "Insufficient data";
-        } else if (positiveCount >= 2) {
-            initialDecision = "Diastolic dysfunction present";
-        } else if (positiveCount === 0 && availableCount === 2) {
-            initialDecision = "Normal diastolic function";
-        } else if (positiveCount === 1 && availableCount === 2) {
-            initialDecision = "Indeterminate result";
-        } else {
-            initialDecision = "Normal diastolic function";
-        }
-
-        return initialDecision;
-    }
-
-    function handleSubsequentSteps(step, initialDecision) {
-        $('.step-inputs').hide(); // Hide all step inputs
-
-        $('#backButton').toggle(step > 0);
-        $('#nextButton').toggle(step === 1 && initialDecision !== "Insufficient data");
-
-        switch (initialDecision) {
-            case "Diastolic dysfunction present":
-                if (step === 1) {
-                    $('#diastolicDysfunctionInputs').show();
-                } else if (step === 2) {
-                    let additionalInput1 = $('#additionalInput1').val();
-                    $('#result').text('Further step result: ' + additionalInput1); // Example processing
-                }
-                break;
-
-            case "Normal diastolic function":
-                if (step === 1) {
-                    $('#normalFunctionInputs').show();
-                } else if (step === 2) {
-                    let additionalInput2 = $('#additionalInput2').val();
-                    $('#result').text('Further step result: ' + additionalInput2); // Example processing
-                }
-                break;
-
-            case "Indeterminate result":
-                $('#result').text('Indeterminate result: Further evaluation required.');
-                break;
-
-            case "Insufficient data":
-                $('#result').text('Insufficient data: Unable to proceed.');
-                break;
-
-            default:
-                $('#result').text('Error: Unrecognized decision.');
-                break;
-        }
-    }
+    $('#noButton').click(function() {
+        const node = decisionTree[state.currentNode];
+        navigateTo(node.no);
+    });
 
     $('#backButton').click(function() {
-        if (state.currentStep > 0) {
-            state.currentStep--;
-            handleSubsequentSteps(state.currentStep, state.initialDecision);
+        if (state.history.length > 0) {
+            const previousNode = state.history.pop();
+            showNode(previousNode);
         }
     });
 
-    $('#nextButton').click(function() {
-        state.currentStep++;
-        handleSubsequentSteps(state.currentStep, state.initialDecision);
-    });
-
-    $('#submitDiastolicDysfunction').click(function() {
-        let additionalInput1 = $('#additionalInput1').val();
-        $('#result').text('Further step result: ' + additionalInput1); // Example processing
-    });
-
-    $('#submitNormalFunction').click(function() {
-        let additionalInput2 = $('#additionalInput2').val();
-        $('#result').text('Further step result: ' + additionalInput2); // Example processing
-    });
+    // Start at the root node
+    showNode(0);
 });
