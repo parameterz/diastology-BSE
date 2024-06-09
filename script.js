@@ -34,7 +34,7 @@ $(document).ready(function() {
         },
         {
             id: "laStrain",
-            question: "Assess LA strain: ",
+            question: "Assess LA strain:",
             options: [
                 { text: "pump strain ≥14% OR reservoir strain ≥30%", value: "positive" },
                 { text: "pump strain <14% OR reservoir strain <30%", value: "negative" }
@@ -45,7 +45,7 @@ $(document).ready(function() {
             question: "LA Reservoir Strain",
             options: [
                 { text: "LARs <18%", value: "positive" },
-                { text: "LARs ≥18", value: "negative" }
+                { text: "LARs ≥18%", value: "negative" }
             ]
         },
         {
@@ -88,7 +88,17 @@ $(document).ready(function() {
 
         state.inputs[currentNodeId] = selectedValue;
 
-        // Evaluate the current state based on the inputs
+        // Clear subsequent steps
+        const nodesToRemove = Object.keys(state.inputs).filter(id => id > currentNodeId);
+        nodesToRemove.forEach(id => {
+            delete state.inputs[id];
+            $(`div[data-node-id='${id}']`).remove();
+        });
+        $('#result').hide(); // Hide the result if any
+
+        state.finalResultDisplayed = false;
+
+        // Re-evaluate the current state based on the inputs
         evaluateState();
     });
 
