@@ -7,6 +7,7 @@ $(document).ready(function() {
     const decisionTree = [
         {
             id: "eToERatio",
+            order: 0,
             question: "What is the E/e' ratio?",
             options: [
                 { text: "E/e' ratio > 14", value: "positive" },
@@ -16,6 +17,7 @@ $(document).ready(function() {
         },
         {
             id: "laVolumeIndex",
+            order: 1,
             question: "What is the LA Volume index (LAVi)?",
             options: [
                 { text: "LAVi > 34", value: "positive" },
@@ -25,6 +27,7 @@ $(document).ready(function() {
         },
         {
             id: "trVelocity",
+            order: 2,
             question: "What is the TR Velocity?",
             options: [
                 { text: "TR Velocity > 2.8", value: "positive" },
@@ -34,6 +37,7 @@ $(document).ready(function() {
         },
         {
             id: "laStrain",
+            order: 3,
             question: "Assess LA strain:",
             options: [
                 { text: "pump strain ≥14% OR reservoir strain ≥30%", value: "positive" },
@@ -42,6 +46,7 @@ $(document).ready(function() {
         },
         {
             id: "lars",
+            order: 4,
             question: "LA Reservoir Strain",
             options: [
                 { text: "LARs <18%", value: "positive" },
@@ -50,6 +55,7 @@ $(document).ready(function() {
         },
         {
             id: "ageSpecificE",
+            order: 5,
             question: "Assess relaxation by age-specific e'",
             options: [
                 { text: "e' > LLN", value: "positive" },
@@ -58,6 +64,7 @@ $(document).ready(function() {
         },
         {
             id: "supplementaryParams",
+            order: 6,
             question: "Assess supplementary parameters: Ar-A duration >30 ms OR L-wave >20 cm/s",
             options: [
                 { text: "≥1 positive", value: "positive" },
@@ -69,7 +76,7 @@ $(document).ready(function() {
     function appendNode(nodeId) {
         const node = decisionTree.find(n => n.id === nodeId);
         if (node && !$(`div[data-node-id='${nodeId}']`).length) {
-            const questionDiv = $(`<div class="question-block" data-node-id="${nodeId}"></div>`);
+            const questionDiv = $(`<div class="question-block" data-node-id="${nodeId}" data-order="${node.order}"></div>`);
             questionDiv.append(`<p>${node.question}</p>`);
             const select = $('<select class="responseSelect"></select>');
             select.append('<option value="" selected disabled>Select an option</option>');
@@ -85,14 +92,17 @@ $(document).ready(function() {
         const selectedValue = $(this).val();
         const parentDiv = $(this).closest('.question-block');
         const currentNodeId = parentDiv.data('node-id');
+        const currentNodeOrder = parentDiv.data('order');
 
         state.inputs[currentNodeId] = selectedValue;
 
         // Clear subsequent steps
-        const nodesToRemove = Object.keys(state.inputs).filter(id => id > currentNodeId);
-        nodesToRemove.forEach(id => {
-            delete state.inputs[id];
-            $(`div[data-node-id='${id}']`).remove();
+        Object.keys(state.inputs).forEach(id => {
+            const order = $(`div[data-node-id='${id}']`).data('order');
+            if (order > currentNodeOrder) {
+                delete state.inputs[id];
+                $(`div[data-node-id='${id}']`).remove();
+            }
         });
         $('#result').hide(); // Hide the result if any
 
