@@ -9,8 +9,8 @@ $(document).ready(function() {
             id: "eToERatio",
             question: "What is the E/e' ratio?",
             options: [
-                { text: "> 14", value: "positive" },
-                { text: "< 14", value: "negative" },
+                { text: "E/e' ratio > 14", value: "positive" },
+                { text: "E/e' ratio < 14", value: "negative" },
                 { text: "Not Available", value: "not available" }
             ]
         },
@@ -18,8 +18,8 @@ $(document).ready(function() {
             id: "laVolumeIndex",
             question: "What is the LA Volume index (LAVi)?",
             options: [
-                { text: "> 34", value: "positive" },
-                { text: "< 34", value: "negative" },
+                { text: "LAVi > 34", value: "positive" },
+                { text: "LAVi < 34", value: "negative" },
                 { text: "Not Available", value: "not available" }
             ]
         },
@@ -27,25 +27,25 @@ $(document).ready(function() {
             id: "trVelocity",
             question: "What is the TR Velocity?",
             options: [
-                { text: "> 2.8", value: "positive" },
-                { text: "< 2.8", value: "negative" },
+                { text: "TR Velocity > 2.8", value: "positive" },
+                { text: "TR Velocity < 2.8", value: "negative" },
                 { text: "Not Available", value: "not available" }
             ]
         },
         {
             id: "laStrain",
-            question: "Assess LA strain: pump strain ≥14% OR reservoir strain ≥30%",
+            question: "Assess LA strain: ",
             options: [
-                { text: "Yes", value: "positive" },
-                { text: "No", value: "negative" }
+                { text: "pump strain ≥14% OR reservoir strain ≥30%", value: "positive" },
+                { text: "pump strain <14% OR reservoir strain <30%", value: "negative" }
             ]
         },
         {
             id: "lars",
-            question: "LARs <18%",
+            question: "LA Reservoir Strain",
             options: [
-                { text: "Yes", value: "positive" },
-                { text: "No", value: "negative" }
+                { text: "LARs <18%", value: "positive" },
+                { text: "LARs ≥18", value: "negative" }
             ]
         },
         {
@@ -122,7 +122,7 @@ $(document).ready(function() {
         // Further branching based on subsequent questions
         const laStrain = state.inputs["laStrain"];
         if (laStrain) {
-            if (laStrain === "positive") {
+            if (laStrain === "negative") {
                 $('#result').text("Impaired diastolic function with elevated filling pressures").show();
                 state.finalResultDisplayed = true;
                 return;
