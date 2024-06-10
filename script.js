@@ -42,16 +42,16 @@ $(document).ready(function() {
             id: "ageSpecificE",
             question: "Assess relaxation by age-specific e'",
             options: [
-                { text: "e' > LLN", value: "negative" },
-                { text: "e' < LLN", value: "positive" }
+                { text: "e' < LLN", value: "positive" },
+                { text: "e' > LLN", value: "negative" }
             ]
         },
         {
             id: "laStrain",
             question: "Assess LA strain:",
             options: [
-                { text: "pump strain ≥14% OR reservoir strain ≥30%", value: "negative" },
-                { text: "pump strain <14% OR reservoir strain <30%", value: "positive" }
+                { text: "pump strain <14% OR reservoir strain <30%", value: "positive" },
+                { text: "pump strain ≥14% OR reservoir strain ≥30%", value: "negative" }
             ]
         },
         {
