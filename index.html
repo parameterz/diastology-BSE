@@ -4,16 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diastolic Function Algorithm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
         #questionContainer {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
             margin-bottom: 20px;
+        }
+        .question-block {
+            margin-bottom: 20px;
+        }
+        .question-block p {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .responseSelect {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         #navigation {
             display: flex;
             justify-content: space-between;
+            width: 80%;
+            max-width: 600px;
+        }
+        #navigation button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #backButton {
+            background-color: #ccc;
+        }
+        #nextButton {
+            background-color: #007bff;
+            color: #fff;
+        }
+        #backButton:disabled {
+            cursor: not-allowed;
+            background-color: #e0e0e0;
+        }
+        #nextButton:disabled {
+            cursor: not-allowed;
+            background-color: #b0d4ff;
         }
         #result {
             margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
             display: none;
         }
     </style>
@@ -21,8 +85,8 @@
 <body>
     <div id="questionContainer"></div>
     <div id="navigation">
-        <button id="backButton" disabled>Back</button>
-        <button id="nextButton">Next</button>
+        <button id="backButton" disabled><i class="fas fa-arrow-left"></i> Back</button>
+        <button id="nextButton">Next <i class="fas fa-arrow-right"></i></button>
     </div>
     <div id="result"></div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
