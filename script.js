@@ -152,7 +152,7 @@ $(document).ready(function() {
         const availableCount = initialResults.filter(value => value !== "not available").length;
 
         if (positiveCount >= 2) {
-            displayResult("Impaired diastolic function with elevated filling pressures");
+            displayResult("result-impaired-elevated");
         } else if (negativeCount >= 2) {
             state.currentQuestionIndex = decisionTree.findIndex(q => q.id === "ageSpecificE");
             renderQuestion();
@@ -168,9 +168,9 @@ $(document).ready(function() {
 
         if (questionData.id === "ageSpecificE") {
             if (result === "positive") {
-                displayResult("Impaired diastolic function with normal filling");
+                displayResult("result-impaired");
             } else {
-                displayResult("Normal diastolic function");
+                displayResult("result-normal");
             }
         } else if (questionData.id === "laStrain") {
             if (result === "positive") {
@@ -182,14 +182,14 @@ $(document).ready(function() {
             }
         } else if (questionData.id === "lars") {
             if (result === "positive") {
-                displayResult("Impaired diastolic function with elevated filling pressures");
+                displayResult("result-impaired-elevated");
             } else {
                 state.currentQuestionIndex = decisionTree.findIndex(q => q.id === "supplementaryParams");
                 renderQuestion();
             }
         } else if (questionData.id === "supplementaryParams") {
             if (result === "positive") {
-                displayResult("Impaired diastolic function with elevated filling pressures");
+                displayResult("result-impaired-elevated");
             } else {
                 state.currentQuestionIndex = decisionTree.findIndex(q => q.id === "ageSpecificE");
                 renderQuestion();
@@ -197,9 +197,9 @@ $(document).ready(function() {
         }
     }
 
-    function displayResult(result) {
-        $('#questionContainer').empty();
-        $('#result').text(result).show();
+    function displayResult(resultId) {
+        $('.result').hide();
+        $('#' + resultId).show();
         state.finalResultDisplayed = true;
     }
 
