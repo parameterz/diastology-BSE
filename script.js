@@ -1,122 +1,135 @@
 $(document).ready(function() {
     let state = {
-        currentStep: 0,
-        initialDecision: null,
-        criteria: {}
+        currentQuestionIndex: 0,
+        inputs: {},
+        finalResultDisplayed: false
     };
 
-    $('#evaluateButton').click(function() {
-        // Get the input values
-        let eToERatio = $('#eToERatio').val();
-        let laVolumeIndex = $('#laVolumeIndex').val();
-        let trVelocity = $('#trVelocity').val();
+    const decisionTree = [
+        {
+            id: "eToERatio",
+            question: "What is the E/e' ratio?",
+            options: [
+                { text: "E/e' ratio > 14", value: "positive" },
+                { text: "E/e' ratio < 14", value: "negative" },
+                { text: "Not Available", value: "not available" }
+            ]
+        },
+        {
+            id: "laVolumeIndex",
+            question: "What is the LA Volume index (LAVi)?",
+            options: [
+                { text: "LAVi > 34", value: "positive" },
+                { text: "LAVi < 34", value: "negative" },
+                { text: "Not Available", value: "not available" }
+            ]
+        },
+        {
+            id: "trVelocity",
+            question: "What is the TR Velocity?",
+            options: [
+                { text: "TR Velocity > 2.8", value: "positive" },
+                { text: "TR Velocity < 2.8", value: "negative" },
+                { text: "Not Available", value: "not available" }
+            ]
+        },
+        {
+            id: "laStrain",
+            question: "Assess LA strain:",
+            options: [
+                { text: "pump strain ≥14% OR reservoir strain ≥30%", value: "positive" },
+                { text: "pump strain <14% OR reservoir strain <30%", value: "negative" }
+            ]
+        },
+        {
+            id: "lars",
+            question: "LA Reservoir Strain",
+            options: [
+                { text: "LARs <18%", value: "positive" },
+                { text: "LARs ≥18%", value: "negative" }
+            ]
+        },
+        {
+            id: "ageSpecificE",
+            question: "Assess relaxation by age-specific e'",
+            options: [
+                { text: "e' > LLN", value: "positive" },
+                { text: "e' < LLN", value: "negative" }
+            ]
+        },
+        {
+            id: "supplementaryParams",
+            question: "Assess supplementary parameters: Ar-A duration >30 ms OR L-wave >20 cm/s",
+            options: [
+                { text: "≥1 positive", value: "positive" },
+                { text: "None positive", value: "negative" }
+            ]
+        }
+    ];
 
-        // Convert input values to floats if they are provided
-        eToERatio = eToERatio ? parseFloat(eToERatio) : undefined;
-        laVolumeIndex = laVolumeIndex ? parseFloat(laVolumeIndex) : undefined;
-        trVelocity = trVelocity ? parseFloat(trVelocity) : undefined;
+    function renderQuestion() {
+        const questionData = decisionTree[state.currentQuestionIndex];
+        $('#questionContainer').empty();
+        const questionDiv = $(`<div class="question-block" data-node-id="${questionData.id}"></div>`);
+        questionDiv.append(`<p>${questionData.question}</p>`);
+        const select = $('<select class="responseSelect"></select>');
+        select.append('<option value="" selected disabled>Select an option</option>');
+        questionData.options.forEach(option => {
+            select.append(`<option value="${option.value}">${option.text}</option>`);
+        });
+        if (state.inputs[questionData.id]) {
+            select.val(state.inputs[questionData.id]);
+        }
+        questionDiv.append(select);
+        $('#questionContainer').append(questionDiv);
+        $('#backButton').prop('disabled', state.currentQuestionIndex === 0);
+        $('#nextButton').prop('disabled', !state.inputs[questionData.id]);
+    }
 
-        // Implement the algorithm logic
-        let result = evaluateDiastolicFunction(eToERatio, laVolumeIndex, trVelocity);
-
-        // Display the result
-        $('#result').text('Result: ' + result);
-
-        // Save state and handle subsequent steps based on the result
-        state.initialDecision = result;
-        state.criteria = {
-            eToERatio: eToERatio !== undefined ? eToERatio > 14 : undefined,
-            laVolumeIndex: laVolumeIndex !== undefined ? laVolumeIndex > 34 : undefined,
-            trVelocity: trVelocity !== undefined ? trVelocity > 2.8 : undefined
-        };
-        state.currentStep = 1;
-        handleSubsequentSteps(state.currentStep, state.initialDecision);
+    $('#questionContainer').on('change', '.responseSelect', function() {
+        const selectedValue = $(this).val();
+        const currentNodeId = $(this).closest('.question-block').data('node-id');
+        state.inputs[currentNodeId] = selectedValue;
+        $('#nextButton').prop('disabled', false);
     });
 
-    function evaluateDiastolicFunction(eToERatio, laVolumeIndex, trVelocity) {
-        let criteria = {
-            eToERatio: eToERatio !== undefined ? eToERatio > 14 : undefined,
-            laVolumeIndex: laVolumeIndex !== undefined ? laVolumeIndex > 34 : undefined,
-            trVelocity: trVelocity !== undefined ? trVelocity > 2.8 : undefined
-        };
-
-        let positiveCount = Object.values(criteria).filter(val => val === true).length;
-        let availableCount = Object.values(criteria).filter(val => val !== undefined).length;
-
-        let initialDecision;
-        if (availableCount < 2) {
-            initialDecision = "Insufficient data";
-        } else if (positiveCount >= 2) {
-            initialDecision = "Diastolic dysfunction present";
-        } else if (positiveCount === 0 && availableCount === 2) {
-            initialDecision = "Normal diastolic function";
-        } else if (positiveCount === 1 && availableCount === 2) {
-            initialDecision = "Indeterminate result";
-        } else {
-            initialDecision = "Normal diastolic function";
-        }
-
-        return initialDecision;
-    }
-
-    function handleSubsequentSteps(step, initialDecision) {
-        $('.step-inputs').hide(); // Hide all step inputs
-
-        $('#backButton').toggle(step > 0);
-        $('#nextButton').toggle(step === 1 && initialDecision !== "Insufficient data");
-
-        switch (initialDecision) {
-            case "Diastolic dysfunction present":
-                if (step === 1) {
-                    $('#diastolicDysfunctionInputs').show();
-                } else if (step === 2) {
-                    let additionalInput1 = $('#additionalInput1').val();
-                    $('#result').text('Further step result: ' + additionalInput1); // Example processing
-                }
-                break;
-
-            case "Normal diastolic function":
-                if (step === 1) {
-                    $('#normalFunctionInputs').show();
-                } else if (step === 2) {
-                    let additionalInput2 = $('#additionalInput2').val();
-                    $('#result').text('Further step result: ' + additionalInput2); // Example processing
-                }
-                break;
-
-            case "Indeterminate result":
-                $('#result').text('Indeterminate result: Further evaluation required.');
-                break;
-
-            case "Insufficient data":
-                $('#result').text('Insufficient data: Unable to proceed.');
-                break;
-
-            default:
-                $('#result').text('Error: Unrecognized decision.');
-                break;
-        }
-    }
-
     $('#backButton').click(function() {
-        if (state.currentStep > 0) {
-            state.currentStep--;
-            handleSubsequentSteps(state.currentStep, state.initialDecision);
+        if (state.currentQuestionIndex > 0) {
+            state.currentQuestionIndex--;
+            renderQuestion();
         }
     });
 
     $('#nextButton').click(function() {
-        state.currentStep++;
-        handleSubsequentSteps(state.currentStep, state.initialDecision);
+        if (state.currentQuestionIndex < decisionTree.length - 1) {
+            state.currentQuestionIndex++;
+            renderQuestion();
+        } else {
+            evaluateState();
+        }
     });
 
-    $('#submitDiastolicDysfunction').click(function() {
-        let additionalInput1 = $('#additionalInput1').val();
-        $('#result').text('Further step result: ' + additionalInput1); // Example processing
-    });
+    function evaluateState() {
+        const results = Object.values(state.inputs);
+        const positiveCount = results.filter(value => value === "positive").length;
+        const negativeCount = results.filter(value => value === "negative").length;
+        const availableCount = results.filter(value => value !== "not available").length;
 
-    $('#submitNormalFunction').click(function() {
-        let additionalInput2 = $('#additionalInput2').val();
-        $('#result').text('Further step result: ' + additionalInput2); // Example processing
-    });
+        if (availableCount < 2) {
+            $('#result').text("Insufficient data").show();
+            return;
+        } else if (positiveCount >= 2) {
+            $('#result').text("Impaired diastolic function with elevated filling pressures").show();
+        } else if (negativeCount >= 2) {
+            $('#result').text("Normal diastolic function").show();
+        } else if (availableCount === 2 && positiveCount === 1) {
+            $('#result').text("Impaired diastolic function with elevated filling pressures").show();
+        } else {
+            $('#result').text("Impaired diastolic function with elevated filling pressures").show();
+        }
+        $('#result').show();
+        state.finalResultDisplayed = true;
+    }
+
+    renderQuestion(); // Initial render
 });
