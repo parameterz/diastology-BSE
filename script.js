@@ -64,10 +64,10 @@ $(document).ready(function() {
         },
         {
             id: "supplementaryParams",
-            question: "Assess supplementary parameters: Ar-A duration >30 ms OR L-wave >20 cm/s",
+            question: "Assess supplementary parameters: ",
             options: [
-                { text: "≥1 positive", value: "positive" },
-                { text: "None positive", value: "negative" }
+                { text: "Ar-A duration >30 ms OR L-wave >20 cm/s", value: "positive" },
+                { text: "Ar-A duration <30 ms AND L-wave <20 cm/s", value: "negative" }
             ]
         }
     ];
@@ -152,7 +152,7 @@ $(document).ready(function() {
         const availableCount = initialResults.filter(value => value !== "not available").length;
 
         if (positiveCount >= 2) {
-            displayResult("Impaired diastolic function");
+            displayResult("Impaired diastolic function with elevated filling pressures");
         } else if (negativeCount >= 2) {
             state.currentQuestionIndex = decisionTree.findIndex(q => q.id === "ageSpecificE");
             renderQuestion();
@@ -182,14 +182,14 @@ $(document).ready(function() {
             }
         } else if (questionData.id === "lars") {
             if (result === "positive") {
-                displayResult("Impaired diastolic function");
+                displayResult("Impaired diastolic function with elevated filling pressures");
             } else {
                 state.currentQuestionIndex = decisionTree.findIndex(q => q.id === "supplementaryParams");
                 renderQuestion();
             }
         } else if (questionData.id === "supplementaryParams") {
             if (result === "positive") {
-                displayResult("Impaired diastolic function");
+                displayResult("Impaired diastolic function with elevated filling pressures");
             } else {
                 state.currentQuestionIndex = decisionTree.findIndex(q => q.id === "ageSpecificE");
                 renderQuestion();
